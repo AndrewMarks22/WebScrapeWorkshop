@@ -111,23 +111,49 @@ def save_to_csv(books, filename="books.csv"):
     # Hint: Use csv.writer() to create a writer object, then call writer.writerow() for the header and writer.writerows() for the book data.
 
     with open(filename, "w", newline="", encoding="utf-8") as f:
+        pass  # TODO 8 ← replace `pass` with your csv.writer code
 
     print(f"Saved {len(books)} books to {filename}")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
+# Run `python scraper_starter.py` after completing each group of TODOs.
+# The script checks your progress and stops at the first unfinished stage.
 
 if __name__ == "__main__":
-    print("Starting scraper...")
 
-    # Scrape the first 5 pages (50 books total)
-    books = scrape_all_pages(num_pages=5)
+    # ── Stage 1: get_page()  (TODOs 1-3) ─────────────────────────────────────
+    print("── Stage 1: get_page() ──────────────────────────────────")
+    soup = get_page(BASE_URL + "page-1.html")
+    if soup is None:
+        print("  ✗  get_page() returned None — complete TODOs 1-3 first.")
+        exit()
+    print(f"  ✓  Page fetched! Page title: {soup.title.text.strip()}\n")
 
-    print(f"\nTotal books scraped: {len(books)}")
+    # ── Stage 2: extract_books()  (TODOs 4-6) ────────────────────────────────
+    print("── Stage 2: extract_books() ─────────────────────────────")
+    books_page1 = extract_books(soup)
+    if not books_page1:
+        print("  ✗  extract_books() returned nothing — complete TODOs 4-6 first.")
+        exit()
+    print(f"  ✓  Found {len(books_page1)} books on page 1. First 3:")
+    for title, price in books_page1[:3]:
+        print(f"       {price}  {title}")
+    print()
 
-    # Print a preview of the first 5 books
-    for title, price in books[:5]:
-        print(f"  {price}  {title}")
+    # ── Stage 3: scrape_all_pages()  (TODO 7) ────────────────────────────────
+    print("── Stage 3: scrape_all_pages() ──────────────────────────")
+    all_books = scrape_all_pages(num_pages=5)
+    if not all_books:
+        print("  ✗  scrape_all_pages() returned nothing — complete TODO 7 first.")
+        exit()
+    print(f"  ✓  Total books scraped: {len(all_books)}\n")
 
-    # Save everything to CSV
-    save_to_csv(books)
+    # ── Stage 4: save_to_csv()  (TODO 8) ─────────────────────────────────────
+    print("── Stage 4: save_to_csv() ───────────────────────────────")
+    save_to_csv(all_books)
+    import os
+    if os.path.getsize("books.csv") > 0:
+        print("  ✓  books.csv written successfully!")
+    else:
+        print("  ✗  books.csv is empty — complete TODO 8 first.")
